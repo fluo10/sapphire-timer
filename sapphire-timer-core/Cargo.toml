@@ -18,7 +18,11 @@ fastembed-embed = ["sapphire-workspace/fastembed-embed"]
 git-sync        = ["sapphire-workspace/git-sync"]
 
 [dependencies]
-sapphire-workspace = { package = "sapphire-framework-workspace", git = "https://github.com/fluo10/sapphire-framework", branch = "feat/framework-migration", default-features = false }
+# Carries a `version` alongside `git` on purpose: without it the requirement is
+# `*`, which `cargo deny`'s wildcard ban rejects. It also becomes the crates.io
+# requirement unchanged once the framework is published and the git/branch keys
+# come off — see https://github.com/fluo10/sapphire-framework/issues/80
+sapphire-workspace = { package = "sapphire-framework-workspace", version = "0.1", git = "https://github.com/fluo10/sapphire-framework", branch = "feat/framework-migration", default-features = false }
 serde.workspace = true
 serde_json.workspace = true
 chrono.workspace = true
