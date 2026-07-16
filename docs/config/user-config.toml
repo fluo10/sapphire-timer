@@ -1,0 +1,54 @@
+# Machine-local configuration for sapphire-timer.
+#
+# Location: $XDG_CONFIG_HOME/sapphire-timer/config.toml
+#           (%APPDATA%\sapphire-timer\config.toml on Windows)
+#
+# This is deliberately separate from the per-workspace config at
+# <root>/.sapphire-timer/config.toml: the same timer workspace can be shared
+# across machines with different hardware, so which cache backend and embedding
+# model to use is a property of the machine, not of the workspace.
+#
+# Every setting has a default — an absent file is fine.
+
+# How often `sync` runs the periodic cycle (git sync + re-index), in minutes.
+# 0 or unset disables periodic sync.
+sync_interval_minutes = 10
+
+[sync]
+# "auto" (git if the workspace is in a repo) | "none" | "git"
+backend = "auto"
+# remote = "origin"
+
+[cache.retrieve]
+# Vector search backend: "none" | "redb" | "lancedb"
+#
+# "redb" is brute-force exact search inside the pure-Rust cache — no extra
+# dependencies, and fast enough well past the size a timer log reaches.
+# Full-text search works regardless of this setting.
+db = "none"
+
+# Vector search needs an embedding model. Full-text search does not, so this is
+# off by default: a timer log is small and substring/CJK search over it is
+# already handled by the trigram index.
+#
+# [cache.retrieve.embedding]
+# enabled = true
+# provider = "fastembed"
+# model = "BAAI/bge-small-en-v1.5"
+# dimension = 384
+
+# OpenAI-compatible provider instead:
+#
+# [cache.retrieve.embedding]
+# enabled = true
+# provider = "openai"
+# model = "text-embedding-3-small"
+# api_key_env = "OPENAI_API_KEY"
+# dimension = 1536
+
+# Hybrid search merges full-text and vector results by reciprocal rank fusion.
+# Only used with `--mode hybrid` and an embedder configured.
+#
+# [cache.retrieve.hybrid]
+# fts_weight = 0.5
+# rrf_k = 60

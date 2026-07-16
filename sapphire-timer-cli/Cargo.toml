@@ -1,0 +1,30 @@
+[package]
+name = "sapphire-timer-cli"
+edition.workspace = true
+version = "0.1.0"
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+categories = ["command-line-utilities", "date-and-time"]
+keywords = ["timer", "pomodoro", "plain-text", "cli"]
+
+[[bin]]
+name = "sapphire-timer"
+path = "src/main.rs"
+
+[features]
+default = ["redb-store", "fastembed-embed", "git-sync"]
+redb-store      = ["sapphire-timer-core/redb-store"]
+lancedb-store   = ["sapphire-timer-core/lancedb-store"]
+fastembed-embed = ["sapphire-timer-core/fastembed-embed"]
+git-sync        = ["sapphire-timer-core/git-sync"]
+
+[dependencies]
+sapphire-timer-core = { path = "../sapphire-timer-core", version = "0.1.0", default-features = false }
+clap.workspace = true
+anyhow.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+# Ctrl-C handling: an abandoned countdown is still data worth logging.
+ctrlc = "3"

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Test
+        run: cargo test --workspace --locked
+
+  # sapphire-timer exists to prove the framework needs no SQLite. Assert it,
+  # rather than trusting that nobody re-enables grain-id's rusqlite feature or
+  # adds a rusqlite-based dependency by accident.
+  no-sqlite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Assert no SQLite in the dependency graph
+        run: |
+          for crate in libsqlite3-sys rusqlite; do
+            # `cargo tree -i` exits non-zero when the package is absent, which
+            # is exactly what we want to see.
+            if cargo tree -i "$crate" --workspace >/dev/null 2>&1; then
+              echo "::error::$crate is in the dependency graph; sapphire-timer must stay SQLite-free"
+              cargo tree -i "$crate" --workspace
+              exit 1
+            fi
+            echo "ok: no $crate"
+          done

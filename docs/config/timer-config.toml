@@ -1,0 +1,18 @@
+# Per-workspace configuration for sapphire-timer.
+#
+# Location: <root>/.sapphire-timer/config.toml
+#
+# This file is tracked by git and shared across every machine using the
+# workspace. Machine-specific settings (cache backend, embedding model, sync
+# cadence) belong in the user config instead — see user-config.toml.
+#
+# Both directories below must stay OUTSIDE `.sapphire-timer/`: the framework's
+# indexer skips dot-prefixed directories at any depth, so presets or logs moved
+# inside the marker would silently stop being searchable.
+
+# Where preset TOML files live, relative to the workspace root.
+presets_dir = "presets"
+
+# Where session JSONL logs live, relative to the workspace root.
+# One file per month: YYYY-MM.jsonl, append-only.
+logs_dir = "logs"

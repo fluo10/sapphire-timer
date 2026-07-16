@@ -1,0 +1,40 @@
+[package]
+name = "sapphire-timer-core"
+edition.workspace = true
+version = "0.1.0"
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+categories = ["command-line-utilities", "date-and-time"]
+keywords = ["timer", "pomodoro", "plain-text", "local-first"]
+
+[features]
+default = ["redb-store", "fastembed-embed", "git-sync"]
+# Pure-Rust cache backend (redb + tantivy). Without it the workspace silently
+# falls back to an ephemeral in-memory store, so keep it in `default`.
+redb-store      = ["sapphire-workspace/redb-store"]
+lancedb-store   = ["sapphire-workspace/lancedb-store"]
+fastembed-embed = ["sapphire-workspace/fastembed-embed"]
+git-sync        = ["sapphire-workspace/git-sync"]
+
+[dependencies]
+sapphire-workspace = { package = "sapphire-framework-workspace", git = "https://github.com/fluo10/sapphire-framework", branch = "feat/framework-migration", default-features = false }
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+toml.workspace = true
+indexmap.workspace = true
+dirs.workspace = true
+# Human-readable stable IDs for presets and sessions.
+#
+# NOTE: the `rusqlite` feature is deliberately NOT enabled. sapphire-timer has
+# no SQLite anywhere — that is the point of it as a framework testbed — and
+# grain-id's rusqlite feature would drag libsqlite3-sys back in. It is not a
+# default feature, so simply not asking for it is enough.
+grain-id = { version = "0.15", features = ["serde"] }
+# AppContext::device() panics unless device defaults are injected at startup.
+hostname = "0.4"
+
+[dev-dependencies]
+tempfile = "3"
