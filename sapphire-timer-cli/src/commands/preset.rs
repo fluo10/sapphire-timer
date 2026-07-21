@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::Subcommand;
 use sapphire_timer_core::{ops, preset};
 
-use super::{resolve_timer, show_path};
+use super::{open_workspace, show_path};
 
 #[derive(Subcommand)]
 pub enum PresetCommand {
@@ -17,9 +17,15 @@ pub enum PresetCommand {
     },
 }
 
-pub fn run(dir: Option<&Path>, action: PresetCommand) -> Result<()> {
-    let timer = resolve_timer(dir)?;
-    let (presets, _) = ops::list_presets(&timer)?;
+pub fn run(
+    dir: Option<&Path>,
+    action: PresetCommand,
+    remote: Option<&str>,
+    token: Option<&str>,
+) -> Result<()> {
+    let ws = open_workspace(dir, remote, token)?;
+    let timer = ws.timer();
+    let (presets, _) = ops::list_presets(timer)?;
 
     match action {
         PresetCommand::List => {

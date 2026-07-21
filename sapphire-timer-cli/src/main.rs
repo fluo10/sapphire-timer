@@ -17,6 +17,16 @@ struct Cli {
     #[arg(long, env = "SAPPHIRE_TIMER_DIR", global = true, value_name = "DIR")]
     timer_dir: Option<PathBuf>,
 
+    /// Operate on a remote workspace served by a sapphire-timer server, e.g.
+    /// `https://host:8080` (append `#<ws>` to pick a workspace on a
+    /// multi-workspace server). Mutually exclusive with `--timer-dir`.
+    #[arg(long, env = "SAPPHIRE_TIMER_REMOTE", global = true, value_name = "URL")]
+    remote: Option<String>,
+
+    /// Bearer token for an authenticated remote server.
+    #[arg(long, env = "SAPPHIRE_TIMER_TOKEN", global = true, value_name = "TOKEN")]
+    token: Option<String>,
+
     #[command(subcommand)]
     command: Command,
 }
@@ -52,14 +62,20 @@ fn main() -> Result<()> {
     sapphire_timer_core::init_app_context();
     let cli = Cli::parse();
     let dir = cli.timer_dir.as_deref();
+    let remote = cli.remote.as_deref();
+    let token = cli.token.as_deref();
+
+    if remote.is_some() && dir.is_some() {
+        anyhow::bail!("--remote and --timer-dir are mutually exclusive");
+    }
 
     match cli.command {
-        Command::Init { path } => commands::init::run(path.as_deref()),
-        Command::Preset { action } => commands::preset::run(dir, action),
-        Command::Start(args) => commands::start::run(dir, args),
-        Command::Log(args) => commands::log::run(dir, args),
-        Command::Search(args) => commands::search::run(dir, args),
-        Command::Cache { action } => commands::cache::run(dir, action),
-        Command::Sync => commands::sync::run(dir),
+        Command::Init { path } => commands::init::run(path.as_deref(), remote),
+        Command::Preset { action } => commands::preset::run(dir, action, remote, token),
+        Command::Start(args) => commands::start::run(dir, args, remote, token),
+        Command::Log(args) => commands::log::run(dir, args, remote, token),
+        Command::Search(args) => commands::search::run(dir, args, remote, token),
+        Command::Cache { action } => commands::cache::run(dir, action, remote),
+        Command::Sync => commands::sync::run(dir, remote, token),
     }
 }

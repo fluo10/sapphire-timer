@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::Args;
 use sapphire_timer_core::ops;
 
-use super::{hms, resolve_timer};
+use super::{hms, open_workspace};
 
 #[derive(Args)]
 pub struct LogArgs {
@@ -13,9 +13,16 @@ pub struct LogArgs {
     limit: usize,
 }
 
-pub fn run(dir: Option<&Path>, args: LogArgs) -> Result<()> {
-    let timer = resolve_timer(dir)?;
-    let sessions = ops::list_sessions(&timer)?;
+pub fn run(
+    dir: Option<&Path>,
+    args: LogArgs,
+    remote: Option<&str>,
+    token: Option<&str>,
+) -> Result<()> {
+    // Opening a remote workspace pulls the latest sessions into the mirror
+    // first, so the log reflects the server's current state.
+    let ws = open_workspace(dir, remote, token)?;
+    let sessions = ops::list_sessions(ws.timer())?;
 
     if sessions.is_empty() {
         println!("no sessions yet — run `sapphire-timer start <preset>`");

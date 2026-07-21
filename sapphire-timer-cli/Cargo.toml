@@ -21,10 +21,25 @@ git-sync        = ["sapphire-timer-core/git-sync"]
 
 [dependencies]
 sapphire-timer-core = { path = "../sapphire-timer-core", version = "0.1.0", default-features = false }
+# Direct framework deps used only by the `--remote` path (opening a remote
+# workspace as a local cache mirror). Kept on the same git ref as timer-core so
+# the shared `sapphire-framework-workspace` crate resolves to a single rev.
+sapphire-workspace = { package = "sapphire-framework-workspace", version = "0.1", git = "https://github.com/fluo10/sapphire-framework", branch = "main", default-features = false }
+sapphire-backend = { package = "sapphire-framework-backend", version = "0.1", git = "https://github.com/fluo10/sapphire-framework", branch = "main", default-features = false, features = ["redb-store"] }
 clap.workspace = true
 anyhow.workspace = true
 chrono.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+# Drive the async backend from the synchronous CLI.
+tokio = { version = "1", features = ["rt"] }
 # Ctrl-C handling: an abandoned countdown is still data worth logging.
 ctrlc = "3"
+
+[dev-dependencies]
+# Spin up a real framework server in-process to test the `--remote` glue.
+sapphire-remote-server = { package = "sapphire-framework-remote-server", version = "0.1", git = "https://github.com/fluo10/sapphire-framework", branch = "main" }
+sapphire-rpc = { package = "sapphire-framework-rpc", version = "0.1", git = "https://github.com/fluo10/sapphire-framework", branch = "main" }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "macros"] }
+axum = "0.8"
+tempfile = "3"
