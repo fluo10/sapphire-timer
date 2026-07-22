@@ -20,17 +20,13 @@ pub struct TimerState {
 }
 
 impl TimerState {
-    /// Open the workspace's index and sync backend.
+    /// Open the workspace's retrieve index.
     ///
-    /// Uses the framework's `open_configured` rather than `open`, because
-    /// `open` ignores [`SyncConfig`](sapphire_workspace::SyncConfig) entirely
-    /// and would silently attach git even when the user asked for no sync.
-    /// Note that this reaches the device registry, so
-    /// [`init_app_context`](crate::init_app_context) — which injects the device
-    /// defaults — must have run first, or `AppContext::device()` panics.
-    pub fn open(timer: Timer, config: &UserConfig) -> Result<Self> {
+    /// The framework no longer performs local auto-sync (git is a manual,
+    /// user-run concern), so this just opens the index over the files on disk.
+    pub fn open(timer: Timer) -> Result<Self> {
         let workspace = Workspace::from_root(&crate::TIMER_CTX, &timer.root)?;
-        let inner = WorkspaceState::open_configured(workspace, &config.sync)?;
+        let inner = WorkspaceState::open(workspace)?;
         Ok(Self { timer, inner })
     }
 
@@ -65,12 +61,7 @@ impl TimerState {
         Ok(self.inner.sync()?)
     }
 
-    /// Commit, pull and push via the sync backend, then re-index.
-    pub fn sync_git(&self) -> Result<(usize, usize)> {
-        Ok(self.inner.periodic_sync()?)
-    }
-
-    /// Index a file that just changed and stage it for sync.
+    /// Index a file that just changed.
     pub fn on_file_updated(&self, path: &Path) -> Result<()> {
         self.inner.on_file_updated(path)?;
         Ok(())

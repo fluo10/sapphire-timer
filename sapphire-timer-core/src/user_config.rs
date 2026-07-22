@@ -12,9 +12,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, Result};
 
-pub use sapphire_workspace::{
-    EmbeddingConfig, RetrieveConfig, SyncBackendKind, SyncConfig, VectorDb,
-};
+pub use sapphire_workspace::{EmbeddingConfig, RetrieveConfig, VectorDb};
 
 const DEFAULT_SYNC_INTERVAL_MINUTES: u32 = 10;
 
@@ -36,8 +34,7 @@ pub struct CacheConfig {
 pub struct UserConfig {
     #[serde(default)]
     pub cache: CacheConfig,
-    #[serde(default)]
-    pub sync: SyncConfig,
+    /// How often a long-running frontend should re-index changed files.
     #[serde(
         default = "default_sync_interval_minutes",
         skip_serializing_if = "Option::is_none"
@@ -49,7 +46,6 @@ impl Default for UserConfig {
     fn default() -> Self {
         Self {
             cache: CacheConfig::default(),
-            sync: SyncConfig::default(),
             sync_interval_minutes: default_sync_interval_minutes(),
         }
     }
@@ -140,18 +136,6 @@ impl UserConfig {
             }
         }
 
-        if let Some(backend) = std::env::var("SAPPHIRE_TIMER_SYNC_BACKEND")
-            .ok()
-            .and_then(|v| match v.as_str() {
-                "auto" => Some(SyncBackendKind::Auto),
-                "none" => Some(SyncBackendKind::None),
-                "git" => Some(SyncBackendKind::Git),
-                _ => None,
-            })
-        {
-            self.sync.backend = backend;
-        }
-
         if let Some(minutes) = std::env::var("SAPPHIRE_TIMER_SYNC_INTERVAL_MINUTES")
             .ok()
             .and_then(|v| v.parse::<u32>().ok())
@@ -179,7 +163,7 @@ mod tests {
     }
 
     #[test]
-    fn zero_interval_disables_periodic_sync() {
+    fn zero_interval_disables_reindex() {
         let config = UserConfig {
             sync_interval_minutes: Some(0),
             ..UserConfig::default()

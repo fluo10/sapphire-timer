@@ -9,13 +9,12 @@ categories = ["command-line-utilities", "date-and-time"]
 keywords = ["timer", "pomodoro", "plain-text", "local-first"]
 
 [features]
-default = ["redb-store", "fastembed-embed", "git-sync"]
+default = ["redb-store", "fastembed-embed"]
 # Pure-Rust cache backend (redb + tantivy). Without it the workspace silently
 # falls back to an ephemeral in-memory store, so keep it in `default`.
 redb-store      = ["sapphire-workspace/redb-store"]
 lancedb-store   = ["sapphire-workspace/lancedb-store"]
 fastembed-embed = ["sapphire-workspace/fastembed-embed"]
-git-sync        = ["sapphire-workspace/git-sync"]
 
 [dependencies]
 # Carries a `version` alongside `git` on purpose: without it the requirement is
@@ -37,8 +36,6 @@ dirs.workspace = true
 # grain-id's rusqlite feature would drag libsqlite3-sys back in. It is not a
 # default feature, so simply not asking for it is enough.
 grain-id = { version = "0.15", features = ["serde"] }
-# AppContext::device() panics unless device defaults are injected at startup.
-hostname = "0.4"
 
 [dev-dependencies]
 tempfile = "3"
