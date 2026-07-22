@@ -31,8 +31,7 @@ pub use timer_state::TimerState;
 
 // Re-export the framework surface so callers need one dependency.
 pub use sapphire_workspace::{
-    EmbeddingConfig, FileSearchResult, RetrieveConfig, SearchMode, SyncBackend, SyncBackendKind,
-    SyncConfig, VectorDb,
+    EmbeddingConfig, FileSearchResult, RetrieveConfig, SearchMode, VectorDb,
 };
 
 /// Shared application context: app name plus the cache and data directories
@@ -48,12 +47,6 @@ pub static TIMER_CTX: sapphire_workspace::AppContext =
 /// Call this once at the top of `main`, before anything opens a timer
 /// workspace. It is idempotent — `AppContext` is first-writer-wins, so a host
 /// that injected explicit paths beforehand wins and this becomes a no-op.
-///
-/// Unlike its sapphire-journal counterpart this also sets the device defaults.
-/// That is not optional: [`TimerState::open`](timer_state::TimerState::open)
-/// goes through the framework's `open_configured`, which reaches the device
-/// registry, and `AppContext::device()` panics if the defaults were never
-/// injected.
 pub fn init_app_context() {
     let cache = dirs::cache_dir()
         .unwrap_or_else(|| std::env::temp_dir().join(".cache"))
@@ -65,18 +58,4 @@ pub fn init_app_context() {
     let _ = std::fs::create_dir_all(&data);
     TIMER_CTX.set_cache_dir(cache);
     TIMER_CTX.set_data_dir(data);
-    TIMER_CTX.set_device_defaults(collect_device_defaults());
-}
-
-fn collect_device_defaults() -> sapphire_workspace::DeviceDefaults {
-    sapphire_workspace::DeviceDefaults {
-        hostname: hostname::get()
-            .ok()
-            .and_then(|s| s.into_string().ok())
-            .unwrap_or_default(),
-        app_id: env!("CARGO_PKG_NAME").to_owned(),
-        app_version: env!("CARGO_PKG_VERSION").to_owned(),
-        platform: std::env::consts::OS.to_owned(),
-        arch: std::env::consts::ARCH.to_owned(),
-    }
 }

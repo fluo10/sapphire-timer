@@ -2680,21 +2680,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "git2"
-version = "0.21.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddddbf932745a6be37109b6112d3ee09696106f848449069d3a57bba937ab82e"
-dependencies = [
- "bitflags 2.13.1",
- "libc",
- "libgit2-sys",
- "log",
- "openssl-probe 0.1.6",
- "openssl-sys",
- "url",
-]
-
-[[package]]
 name = "glob"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2829,17 +2814,6 @@ name = "hmac-sha256"
 version = "1.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec9d92d097f4749b64e8cc33d924d9f40a2d4eb91402b458014b781f5733d60f"
-
-[[package]]
-name = "hostname"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "617aaa3557aef3810a6369d0a99fac8a080891b68bd9f9812a1eeda0c0730cbd"
-dependencies = [
- "cfg-if",
- "libc",
- "windows-link",
-]
 
 [[package]]
 name = "htmlescape"
@@ -4048,20 +4022,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "libgit2-sys"
-version = "0.18.5+1.9.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "005d6ae6eac1912906073e069f7db60b1fa98e052a68227824afe3e3a1c59ca2"
-dependencies = [
- "cc",
- "libc",
- "libssh2-sys",
- "libz-sys",
- "openssl-sys",
- "pkg-config",
-]
-
-[[package]]
 name = "libm"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4074,32 +4034,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c943259e342f1e06ff2da7a83eabdfe7f92ce10262688dbf1895ff0b3e6e4652"
 dependencies = [
  "libc",
-]
-
-[[package]]
-name = "libssh2-sys"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c04141a07bb0c0bc461cb657808764de571702a59bc5c726c400ac9a7625e3ab"
-dependencies = [
- "cc",
- "libc",
- "libz-sys",
- "openssl-sys",
- "pkg-config",
- "vcpkg",
-]
-
-[[package]]
-name = "libz-sys"
-version = "1.1.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85bc9657773828b90eeb625adff10eeac83cc21bbfd8e23a03eaa8a33c9e28d9"
-dependencies = [
- "cc",
- "libc",
- "pkg-config",
- "vcpkg",
 ]
 
 [[package]]
@@ -4568,7 +4502,7 @@ dependencies = [
  "libc",
  "log",
  "openssl",
- "openssl-probe 0.2.1",
+ "openssl-probe",
  "openssl-sys",
  "schannel",
  "security-framework",
@@ -4873,12 +4807,6 @@ dependencies = [
  "quote",
  "syn 2.0.119",
 ]
-
-[[package]]
-name = "openssl-probe"
-version = "0.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d05e27ee213611ffe7d6348b942e8f942b37114c00cc03cec254295a4a17852e"
 
 [[package]]
 name = "openssl-probe"
@@ -5864,7 +5792,7 @@ version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dab5152771c58876a2146916e53e35057e1a4dfa2b9df0f0305b07f611fdea4d"
 dependencies = [
- "openssl-probe 0.2.1",
+ "openssl-probe",
  "rustls-pki-types",
  "schannel",
  "security-framework",
@@ -5928,7 +5856,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-backend"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "async-trait",
  "chrono",
@@ -5943,7 +5871,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-blob"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "sha2",
  "thiserror 2.0.18",
@@ -5952,7 +5880,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-remote-client"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -5968,7 +5896,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-remote-server"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "axum",
  "base64 0.22.1",
@@ -5987,7 +5915,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-retrieve"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "arrow-array",
  "arrow-schema",
@@ -6006,7 +5934,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-rpc"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "chrono",
  "serde",
@@ -6017,25 +5945,22 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-sync"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "async-trait",
  "chrono",
- "dirs 5.0.1",
- "git2",
  "sapphire-framework-rpc",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
  "tracing",
  "uuid",
- "walkdir",
 ]
 
 [[package]]
 name = "sapphire-framework-track"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "redb",
  "thiserror 2.0.18",
@@ -6045,7 +5970,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-workspace"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#279ff94e112a82bd97b5891dd31320a07e7eed2f"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#89c465a52ce3b8bb6b924871fa66a1c910bd7d12"
 dependencies = [
  "chrono",
  "indexmap 2.14.0",
@@ -6089,7 +6014,6 @@ dependencies = [
  "chrono",
  "dirs 5.0.1",
  "grain-id",
- "hostname",
  "indexmap 2.14.0",
  "sapphire-framework-workspace",
  "serde",

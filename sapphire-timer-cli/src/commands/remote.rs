@@ -14,9 +14,7 @@ use anyhow::{Result, bail};
 use sapphire_backend::{
     RemoteBackend, RemoteClient, WorkspaceBackend as _, WorkspaceLocator, WorkspaceState,
 };
-use sapphire_timer_core::{
-    FileSearchResult, SearchMode, SyncBackendKind, SyncConfig, TIMER_CTX, Timer,
-};
+use sapphire_timer_core::{FileSearchResult, SearchMode, TIMER_CTX, Timer};
 use sapphire_workspace::Workspace;
 
 /// A remote timer workspace: a local cache mirror plus the sync backend that
@@ -54,14 +52,9 @@ impl RemoteWorkspace {
         std::fs::create_dir_all(cache_root.join(format!(".{}", ctx.app_name)))?;
 
         let workspace = Workspace::from_root(ctx, &cache_root)?;
-        // Never attach git to the mirror — it syncs over JSON-RPC, not git,
-        // and the cache dir may sit inside an unrelated repository.
-        let sync_off = SyncConfig {
-            backend: SyncBackendKind::None,
-            remote: None,
-            branch: None,
-        };
-        let cache_state = Arc::new(WorkspaceState::open_configured(workspace, &sync_off)?);
+        // The mirror syncs over JSON-RPC, not git; the framework no longer
+        // attaches any git backend, so a plain open is correct.
+        let cache_state = Arc::new(WorkspaceState::open(workspace)?);
 
         let mut client = RemoteClient::new(url);
         if let Some(t) = token {

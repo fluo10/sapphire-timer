@@ -10,14 +10,12 @@
 #
 # Every setting has a default — an absent file is fine.
 
-# How often `sync` runs the periodic cycle (git sync + re-index), in minutes.
-# 0 or unset disables periodic sync.
+# How often a long-running frontend re-indexes changed files, in minutes.
+# 0 or unset disables periodic re-indexing.
+#
+# The local workspace does not auto-sync over git — run `git` yourself to
+# share a workspace, or use a remote workspace (`--remote`) for live sync.
 sync_interval_minutes = 10
-
-[sync]
-# "auto" (git if the workspace is in a repo) | "none" | "git"
-backend = "auto"
-# remote = "origin"
 
 [cache.retrieve]
 # Vector search backend: "none" | "redb" | "lancedb"

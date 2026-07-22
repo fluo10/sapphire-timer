@@ -13,11 +13,10 @@ name = "sapphire-timer"
 path = "src/main.rs"
 
 [features]
-default = ["redb-store", "fastembed-embed", "git-sync"]
+default = ["redb-store", "fastembed-embed"]
 redb-store      = ["sapphire-timer-core/redb-store"]
 lancedb-store   = ["sapphire-timer-core/lancedb-store"]
 fastembed-embed = ["sapphire-timer-core/fastembed-embed"]
-git-sync        = ["sapphire-timer-core/git-sync"]
 
 [dependencies]
 sapphire-timer-core = { path = "../sapphire-timer-core", version = "0.1.0", default-features = false }

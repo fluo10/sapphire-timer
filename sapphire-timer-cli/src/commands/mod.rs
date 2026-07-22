@@ -26,7 +26,7 @@ pub fn resolve_timer(dir: Option<&Path>) -> Result<Timer> {
 pub fn open_state(dir: Option<&Path>) -> Result<(TimerState, UserConfig)> {
     let timer = resolve_timer(dir)?;
     let config = UserConfig::load()?;
-    let state = TimerState::open(timer, &config)?;
+    let state = TimerState::open(timer)?;
     Ok((state, config))
 }
 
@@ -92,11 +92,14 @@ impl TimerWorkspace {
         }
     }
 
-    /// Sync: git commit/pull/push + reindex (local), or pull from the server
-    /// into the mirror (remote). Returns `(upserted, removed)`.
+    /// Sync: re-index changed files (local), or pull from the server into the
+    /// mirror (remote). Returns `(upserted, removed)`.
+    ///
+    /// Local workspaces no longer auto-sync over git — run `git` yourself to
+    /// share a local workspace.
     pub fn sync(&self) -> Result<(usize, usize)> {
         match self {
-            Self::Local { state, .. } => Ok(state.sync_git()?),
+            Self::Local { state, .. } => Ok(state.sync()?),
             Self::Remote(r) => r.sync(),
         }
     }
