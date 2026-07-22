@@ -1,7 +1,7 @@
 use std::io::Write as _;
 use std::path::Path;
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use clap::Subcommand;
 use sapphire_timer_core::{TimerState, VectorDb, user_config::UserConfig};
 
@@ -21,7 +21,12 @@ pub enum CacheCommand {
     Clean,
 }
 
-pub fn run(dir: Option<&Path>, action: CacheCommand) -> Result<()> {
+pub fn run(dir: Option<&Path>, action: CacheCommand, remote: Option<&str>) -> Result<()> {
+    if remote.is_some() {
+        // The index is a local concern. For a remote workspace the server owns
+        // its index; the mirror's index is maintained automatically on sync.
+        bail!("`cache` maintains the local index and cannot target --remote");
+    }
     match action {
         CacheCommand::Info => info(dir),
         CacheCommand::Sync => sync(dir),

@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::{Args, ValueEnum};
 use sapphire_timer_core::SearchMode;
 
-use super::open_state;
+use super::open_workspace;
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Mode {
@@ -39,17 +39,22 @@ pub struct SearchArgs {
     mode: Mode,
 }
 
-pub fn run(dir: Option<&Path>, args: SearchArgs) -> Result<()> {
-    let (state, config) = open_state(dir)?;
-    state.load_retrieve_backend(&config)?;
+pub fn run(
+    dir: Option<&Path>,
+    args: SearchArgs,
+    remote: Option<&str>,
+    token: Option<&str>,
+) -> Result<()> {
+    let ws = open_workspace(dir, remote, token)?;
+    ws.ensure_search_ready()?;
 
-    let results = state.search(&args.query, args.limit, args.mode.into())?;
+    let results = ws.search(&args.query, args.limit, args.mode.into())?;
     if results.is_empty() {
         println!("no matches");
         return Ok(());
     }
 
-    let root = &state.timer.root;
+    let root = &ws.timer().root;
     for file in &results {
         // Show paths relative to the workspace: absolute ones are noise here.
         let path = Path::new(&file.path);

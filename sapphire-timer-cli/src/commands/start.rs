@@ -10,7 +10,7 @@ use sapphire_timer_core::{
     preset,
 };
 
-use super::{hms, open_state};
+use super::{hms, open_workspace};
 
 #[derive(Args)]
 pub struct StartArgs {
@@ -23,12 +23,18 @@ pub struct StartArgs {
     comment: Option<String>,
 }
 
-pub fn run(dir: Option<&Path>, args: StartArgs) -> Result<()> {
-    let (state, _config) = open_state(dir)?;
-    let (presets, rewritten) = ops::list_presets(&state.timer)?;
-    // Presets that were just assigned an id need to reach the index and git.
+pub fn run(
+    dir: Option<&Path>,
+    args: StartArgs,
+    remote: Option<&str>,
+    token: Option<&str>,
+) -> Result<()> {
+    let ws = open_workspace(dir, remote, token)?;
+    let (presets, rewritten) = ops::list_presets(ws.timer())?;
+    // Presets that were just assigned an id need to reach the index and git
+    // (or the remote server).
     for path in &rewritten {
-        state.on_file_updated(path)?;
+        ws.index_and_stage(path)?;
     }
 
     let preset = preset::find_by_name(&presets, &args.preset)?;
@@ -48,7 +54,7 @@ pub fn run(dir: Option<&Path>, args: StartArgs) -> Result<()> {
 
     let comment = args.comment.clone();
     let (session, log_path) = ops::run_timer(
-        &state.timer,
+        ws.timer(),
         preset,
         |stop| match comment {
             Some(c) => c,
@@ -63,8 +69,8 @@ pub fn run(dir: Option<&Path>, args: StartArgs) -> Result<()> {
     )?;
     eprintln!();
 
-    // Index and stage the appended log line.
-    state.on_file_updated(&log_path)?;
+    // Index and stage (or push) the appended log line.
+    ws.index_and_stage(&log_path)?;
 
     match session.outcome {
         sapphire_timer_core::Outcome::Completed => {

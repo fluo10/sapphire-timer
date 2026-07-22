@@ -1,11 +1,14 @@
 use std::path::Path;
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use sapphire_timer_core::timer::init_workspace;
 
 use super::show_path;
 
-pub fn run(path: Option<&Path>) -> Result<()> {
+pub fn run(path: Option<&Path>, remote: Option<&str>) -> Result<()> {
+    if remote.is_some() {
+        bail!("`init` creates a local workspace and cannot target --remote");
+    }
     let root = match path {
         Some(p) => p.to_path_buf(),
         None => std::env::current_dir()?,
