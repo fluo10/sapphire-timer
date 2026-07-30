@@ -10,10 +10,8 @@
 use std::path::Path;
 use std::sync::Arc;
 
-use anyhow::{Result, bail};
-use sapphire_backend::{
-    RemoteBackend, RemoteClient, WorkspaceBackend as _, WorkspaceLocator, WorkspaceState,
-};
+use anyhow::Result;
+use sapphire_backend::{RemoteBackend, RemoteClient, WorkspaceBackend as _, WorkspaceState};
 use sapphire_timer_core::{FileSearchResult, SearchMode, TIMER_CTX, Timer};
 use sapphire_workspace::Workspace;
 
@@ -28,24 +26,17 @@ pub struct RemoteWorkspace {
 }
 
 impl RemoteWorkspace {
-    /// Open the remote workspace referenced by `remote` (an `http(s)://host#ws`
-    /// URL), pulling its current state into the local cache mirror.
+    /// Open the remote workspace `ws` at server `url`, pulling its current
+    /// state into a local cache mirror.
     ///
     /// Pulling is best-effort: when the server is unreachable, the command
     /// proceeds against whatever the cache already holds (offline reads).
-    pub fn open(remote: &str, token: Option<&str>) -> Result<Self> {
-        let (url, ws) = match WorkspaceLocator::parse(remote) {
-            WorkspaceLocator::Remote { url, ws } => (url, ws),
-            WorkspaceLocator::Local(_) => {
-                bail!("--remote expects an http(s):// URL, got '{remote}'");
-            }
-        };
-
+    pub fn open(url: &str, ws: &str, token: Option<&str>) -> Result<Self> {
         let ctx = &TIMER_CTX;
         let cache_root = ctx
             .cache_dir()
             .join("remotes")
-            .join(mirror_dir_name(&url, &ws));
+            .join(mirror_dir_name(url, ws));
         std::fs::create_dir_all(&cache_root)?;
         // The workspace marker (`.sapphire-timer`) is local metadata, never
         // synced; create it so `Workspace::from_root` accepts the mirror.
@@ -60,7 +51,7 @@ impl RemoteWorkspace {
         if let Some(t) = token {
             client = client.with_token(t);
         }
-        let backend = RemoteBackend::new(client, ws, cache_state);
+        let backend = RemoteBackend::new(client, ws.to_owned(), cache_state);
 
         let rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()
@@ -178,7 +169,7 @@ mod tests {
         drop(seed_rt); // no ambient runtime while the CLI code uses its own
 
         // Open the remote workspace — this pulls the seed into the mirror.
-        let rw = RemoteWorkspace::open(&url, None).unwrap();
+        let rw = RemoteWorkspace::open(&url, "default", None).unwrap();
 
         // The preset is readable through the ordinary file-based path.
         let (presets, _) = sapphire_timer_core::ops::list_presets(&rw.timer).unwrap();

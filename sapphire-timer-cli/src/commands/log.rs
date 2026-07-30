@@ -1,10 +1,8 @@
-use std::path::Path;
-
 use anyhow::Result;
 use clap::Args;
 use sapphire_timer_core::ops;
 
-use super::{hms, open_workspace};
+use super::{Locator, hms, open_workspace};
 
 #[derive(Args)]
 pub struct LogArgs {
@@ -13,15 +11,10 @@ pub struct LogArgs {
     limit: usize,
 }
 
-pub fn run(
-    dir: Option<&Path>,
-    args: LogArgs,
-    remote: Option<&str>,
-    token: Option<&str>,
-) -> Result<()> {
+pub fn run(loc: &Locator, args: LogArgs) -> Result<()> {
     // Opening a remote workspace pulls the latest sessions into the mirror
     // first, so the log reflects the server's current state.
-    let ws = open_workspace(dir, remote, token)?;
+    let ws = open_workspace(loc)?;
     let sessions = ops::list_sessions(ws.timer())?;
 
     if sessions.is_empty() {

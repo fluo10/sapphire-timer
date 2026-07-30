@@ -1,11 +1,11 @@
 use std::io::Write as _;
 use std::path::Path;
 
-use anyhow::{Result, bail};
+use anyhow::Result;
 use clap::Subcommand;
 use sapphire_timer_core::{TimerState, VectorDb, user_config::UserConfig};
 
-use super::{human_size, open_state, resolve_timer, show_path};
+use super::{Locator, human_size, open_state, resolve_local_path, resolve_timer, show_path};
 
 #[derive(Subcommand)]
 pub enum CacheCommand {
@@ -21,12 +21,12 @@ pub enum CacheCommand {
     Clean,
 }
 
-pub fn run(dir: Option<&Path>, action: CacheCommand, remote: Option<&str>) -> Result<()> {
-    if remote.is_some() {
-        // The index is a local concern. For a remote workspace the server owns
-        // its index; the mirror's index is maintained automatically on sync.
-        bail!("`cache` maintains the local index and cannot target --remote");
-    }
+pub fn run(loc: &Locator, action: CacheCommand) -> Result<()> {
+    // The index is a local concern: `resolve_local_path` rejects a remote
+    // selection (the server owns its index; the mirror's is maintained on sync).
+    let config = UserConfig::load()?;
+    let path = resolve_local_path(loc, &config)?;
+    let dir = Some(path.as_path());
     match action {
         CacheCommand::Info => info(dir),
         CacheCommand::Sync => sync(dir),

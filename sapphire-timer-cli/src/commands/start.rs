@@ -1,5 +1,4 @@
 use std::io::{IsTerminal as _, Write as _};
-use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
@@ -10,7 +9,7 @@ use sapphire_timer_core::{
     preset,
 };
 
-use super::{hms, open_workspace};
+use super::{Locator, hms, open_workspace};
 
 #[derive(Args)]
 pub struct StartArgs {
@@ -23,13 +22,8 @@ pub struct StartArgs {
     comment: Option<String>,
 }
 
-pub fn run(
-    dir: Option<&Path>,
-    args: StartArgs,
-    remote: Option<&str>,
-    token: Option<&str>,
-) -> Result<()> {
-    let ws = open_workspace(dir, remote, token)?;
+pub fn run(loc: &Locator, args: StartArgs) -> Result<()> {
+    let ws = open_workspace(loc)?;
     let (presets, rewritten) = ops::list_presets(ws.timer())?;
     // Presets that were just assigned an id need to reach the index and git
     // (or the remote server).

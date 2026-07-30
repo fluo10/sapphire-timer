@@ -7,22 +7,62 @@ pub mod search;
 pub mod start;
 pub mod sync;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
-use anyhow::{Context as _, Result};
+use anyhow::{Context as _, Result, bail};
+use sapphire_backend::{WorkspaceLocator, WorkspaceSelection};
 use sapphire_timer_core::{
-    FileSearchResult, SearchMode, Timer, TimerState, user_config::UserConfig,
+    FileSearchResult, SearchMode, TIMER_CTX, Timer, TimerState, timer::init_workspace,
+    user_config::UserConfig,
 };
 
 const NOT_A_TIMER: &str =
     "not a sapphire-timer workspace — run `sapphire-timer init` to create one";
+
+/// A workspace selection from the CLI's global flags.
+#[derive(Clone, Copy, Default)]
+pub struct Locator<'a> {
+    /// `--timer-dir <path>`: an ad-hoc local root.
+    pub dir: Option<&'a Path>,
+    /// `--remote <url>`: an ad-hoc remote endpoint.
+    pub remote: Option<&'a str>,
+    /// `--workspace <id>`: a named entry from the `[workspace.*]` registry.
+    pub workspace: Option<&'a str>,
+    /// `--token`: bearer for a remote workspace.
+    pub token: Option<&'a str>,
+}
+
+impl<'a> Locator<'a> {
+    fn selection(&self) -> WorkspaceSelection<'a> {
+        WorkspaceSelection {
+            id: self.workspace,
+            ad_hoc_path: self.dir,
+            ad_hoc_url: self.remote,
+            token: self.token,
+        }
+    }
+}
 
 /// Resolve the workspace from `--timer-dir`, else search upwards.
 pub fn resolve_timer(dir: Option<&Path>) -> Result<Timer> {
     Timer::resolve(dir).context(NOT_A_TIMER)
 }
 
-/// Resolve the workspace and open its index.
+/// Resolve a **local** workspace root from the selection (errors on a remote
+/// selection). Used by local-only commands (`cache`).
+pub fn resolve_local_path(loc: &Locator, config: &UserConfig) -> Result<PathBuf> {
+    match config
+        .workspace
+        .resolve(&loc.selection(), TIMER_CTX.data_dir())?
+    {
+        WorkspaceLocator::Local(p) => Ok(p),
+        WorkspaceLocator::Remote { .. } => {
+            bail!("this command is local-only and cannot target a remote workspace")
+        }
+    }
+}
+
+/// Open a local workspace at `dir` (requiring it to already exist) plus its config.
 pub fn open_state(dir: Option<&Path>) -> Result<(TimerState, UserConfig)> {
     let timer = resolve_timer(dir)?;
     let config = UserConfig::load()?;
@@ -105,21 +145,29 @@ impl TimerWorkspace {
     }
 }
 
-/// Open a local or remote workspace. `remote` (an `http(s)://host#ws` URL, from
-/// `--remote`) selects a remote workspace; otherwise `dir` resolves a local one.
-pub fn open_workspace(
-    dir: Option<&Path>,
-    remote: Option<&str>,
-    token: Option<&str>,
-) -> Result<TimerWorkspace> {
-    match remote {
-        Some(url) => Ok(TimerWorkspace::Remote(remote::RemoteWorkspace::open(
-            url, token,
-        )?)),
-        None => {
-            let (state, config) = open_state(dir)?;
+/// Open the workspace selected by `loc`, local or remote.
+///
+/// The selection precedence (`--remote` > `--timer-dir` > `--workspace <id>` >
+/// the `default` entry > the built-in default path) lives in the framework's
+/// [`WorkspaceRegistry::resolve`]. A local workspace that doesn't exist yet is
+/// created on first open (marker + starter presets).
+pub fn open_workspace(loc: &Locator) -> Result<TimerWorkspace> {
+    let config = UserConfig::load()?;
+    let locator = config
+        .workspace
+        .resolve(&loc.selection(), TIMER_CTX.data_dir())?;
+    match locator {
+        WorkspaceLocator::Local(path) => {
+            let timer = match Timer::resolve(Some(&path)) {
+                Ok(t) => t,
+                Err(_) => init_workspace(&path)?,
+            };
+            let state = TimerState::open(timer)?;
             Ok(TimerWorkspace::Local { state, config })
         }
+        WorkspaceLocator::Remote { url, ws, token } => Ok(TimerWorkspace::Remote(
+            remote::RemoteWorkspace::open(&url, &ws, token.as_deref())?,
+        )),
     }
 }
 

@@ -3935,7 +3935,7 @@ dependencies = [
  "js-sys",
  "log",
  "wasm-bindgen",
- "windows-core 0.62.2",
+ "windows-core 0.58.0",
 ]
 
 [[package]]
@@ -7435,7 +7435,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "sapphire-framework-backend",
  "sapphire-framework-workspace",
@@ -7444,13 +7444,15 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-backend"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "async-trait",
  "chrono",
+ "indexmap 2.14.0",
  "sapphire-framework-remote-client",
  "sapphire-framework-rpc",
  "sapphire-framework-workspace",
+ "serde",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
@@ -7459,7 +7461,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-blob"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "sha2",
  "thiserror 2.0.18",
@@ -7468,7 +7470,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-remote-client"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "base64 0.22.1",
  "reqwest",
@@ -7482,7 +7484,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-remote-server"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "axum",
  "base64 0.22.1",
@@ -7501,7 +7503,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-retrieve"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "arrow-array",
  "arrow-schema",
@@ -7520,7 +7522,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-rpc"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "chrono",
  "serde",
@@ -7531,7 +7533,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-track"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "redb",
  "thiserror 2.0.18",
@@ -7541,7 +7543,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-workspace"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#96c2e30ec908da0ddef75c3ad39270031b62e563"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "chrono",
  "indexmap 2.14.0",
@@ -7585,6 +7587,7 @@ dependencies = [
  "dirs 5.0.1",
  "grain-id",
  "indexmap 2.14.0",
+ "sapphire-framework-backend",
  "sapphire-framework-workspace",
  "serde",
  "serde_json",
@@ -9573,7 +9576,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
@@ -9617,24 +9620,11 @@ version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ba6d44ec8c2591c134257ce647b7ea6b20335bf6379a27dac5f1641fcf59f99"
 dependencies = [
- "windows-implement 0.58.0",
- "windows-interface 0.58.0",
+ "windows-implement",
+ "windows-interface",
  "windows-result 0.2.0",
  "windows-strings 0.1.0",
  "windows-targets 0.52.6",
-]
-
-[[package]]
-name = "windows-core"
-version = "0.62.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8e83a14d34d0623b51dce9581199302a221863196a1dde71a7663a4c2be9deb"
-dependencies = [
- "windows-implement 0.60.2",
- "windows-interface 0.59.3",
- "windows-link",
- "windows-result 0.4.1",
- "windows-strings 0.5.1",
 ]
 
 [[package]]
@@ -9649,32 +9639,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "windows-implement"
-version = "0.60.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "053e2e040ab57b9dc951b72c264860db7eb3b0200ba345b4e4c3b14f67855ddf"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
 name = "windows-interface"
 version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "053c4c462dc91d3b1504c6fe5a726dd15e216ba718e84a0e46a88fbe5ded3515"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "windows-interface"
-version = "0.59.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f316c4a2570ba26bbec722032c4099d8c8bc095efccdc15688708623367e358"
 dependencies = [
  "proc-macro2",
  "quote",
