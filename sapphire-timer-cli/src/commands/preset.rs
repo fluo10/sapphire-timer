@@ -1,10 +1,8 @@
-use std::path::Path;
-
 use anyhow::Result;
 use clap::Subcommand;
 use sapphire_timer_core::{ops, preset};
 
-use super::{open_workspace, show_path};
+use super::{Locator, open_workspace, show_path};
 
 #[derive(Subcommand)]
 pub enum PresetCommand {
@@ -17,13 +15,8 @@ pub enum PresetCommand {
     },
 }
 
-pub fn run(
-    dir: Option<&Path>,
-    action: PresetCommand,
-    remote: Option<&str>,
-    token: Option<&str>,
-) -> Result<()> {
-    let ws = open_workspace(dir, remote, token)?;
+pub fn run(loc: &Locator, action: PresetCommand) -> Result<()> {
+    let ws = open_workspace(loc)?;
     let timer = ws.timer();
     let (presets, _) = ops::list_presets(timer)?;
 

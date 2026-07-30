@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, Result};
 
+pub use sapphire_backend::WorkspaceRegistry;
 pub use sapphire_workspace::{EmbeddingConfig, RetrieveConfig, VectorDb};
 
 const DEFAULT_SYNC_INTERVAL_MINUTES: u32 = 10;
@@ -34,6 +35,10 @@ pub struct CacheConfig {
 pub struct UserConfig {
     #[serde(default)]
     pub cache: CacheConfig,
+    /// Named local/remote workspaces (`[workspace.<id>]`), shared with the GUI
+    /// and resolved by the framework's `WorkspaceRegistry::resolve`.
+    #[serde(default)]
+    pub workspace: WorkspaceRegistry,
     /// How often a long-running frontend should re-index changed files.
     #[serde(
         default = "default_sync_interval_minutes",
@@ -46,6 +51,7 @@ impl Default for UserConfig {
     fn default() -> Self {
         Self {
             cache: CacheConfig::default(),
+            workspace: WorkspaceRegistry::default(),
             sync_interval_minutes: default_sync_interval_minutes(),
         }
     }
@@ -160,6 +166,25 @@ mod tests {
     fn an_empty_config_parses() {
         let parsed: UserConfig = toml::from_str("").unwrap();
         assert_eq!(parsed.cache.retrieve.db, VectorDb::None);
+    }
+
+    #[test]
+    fn workspace_registry_parses() {
+        let toml = r#"
+[workspace.foo]
+path = "/home/me/foo"
+
+[workspace.bar]
+name = "Bar"
+url = "https://example.com#bar"
+token = "secret"
+"#;
+        let cfg: UserConfig = toml::from_str(toml).unwrap();
+        assert_eq!(cfg.workspace.ids().count(), 2);
+        assert!(cfg.workspace.get("foo").unwrap().path.is_some());
+        let bar = cfg.workspace.get("bar").unwrap();
+        assert_eq!(bar.url.as_deref(), Some("https://example.com#bar"));
+        assert_eq!(bar.token.as_deref(), Some("secret"));
     }
 
     #[test]

@@ -19,9 +19,14 @@ struct Cli {
 
     /// Operate on a remote workspace served by a sapphire-timer server, e.g.
     /// `https://host:8080` (append `#<ws>` to pick a workspace on a
-    /// multi-workspace server). Mutually exclusive with `--timer-dir`.
+    /// multi-workspace server).
     #[arg(long, env = "SAPPHIRE_TIMER_REMOTE", global = true, value_name = "URL")]
     remote: Option<String>,
+
+    /// Use a named workspace from the `[workspace.<id>]` config. Defaults to
+    /// `default`. Mutually exclusive with `--timer-dir` / `--remote`.
+    #[arg(long, short = 'w', env = "SAPPHIRE_TIMER_WORKSPACE", global = true, value_name = "ID")]
+    workspace: Option<String>,
 
     /// Bearer token for an authenticated remote server.
     #[arg(long, env = "SAPPHIRE_TIMER_TOKEN", global = true, value_name = "TOKEN")]
@@ -63,19 +68,34 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     let dir = cli.timer_dir.as_deref();
     let remote = cli.remote.as_deref();
+    let workspace = cli.workspace.as_deref();
     let token = cli.token.as_deref();
 
-    if remote.is_some() && dir.is_some() {
-        anyhow::bail!("--remote and --timer-dir are mutually exclusive");
+    // At most one workspace selector; the resolver's precedence would otherwise
+    // silently ignore the others.
+    if [dir.is_some(), remote.is_some(), workspace.is_some()]
+        .iter()
+        .filter(|&&set| set)
+        .count()
+        > 1
+    {
+        anyhow::bail!("--timer-dir, --remote and --workspace are mutually exclusive");
     }
+
+    let loc = commands::Locator {
+        dir,
+        remote,
+        workspace,
+        token,
+    };
 
     match cli.command {
         Command::Init { path } => commands::init::run(path.as_deref(), remote),
-        Command::Preset { action } => commands::preset::run(dir, action, remote, token),
-        Command::Start(args) => commands::start::run(dir, args, remote, token),
-        Command::Log(args) => commands::log::run(dir, args, remote, token),
-        Command::Search(args) => commands::search::run(dir, args, remote, token),
-        Command::Cache { action } => commands::cache::run(dir, action, remote),
-        Command::Sync => commands::sync::run(dir, remote, token),
+        Command::Preset { action } => commands::preset::run(&loc, action),
+        Command::Start(args) => commands::start::run(&loc, args),
+        Command::Log(args) => commands::log::run(&loc, args),
+        Command::Search(args) => commands::search::run(&loc, args),
+        Command::Cache { action } => commands::cache::run(&loc, action),
+        Command::Sync => commands::sync::run(&loc),
     }
 }

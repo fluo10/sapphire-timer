@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::{Args, ValueEnum};
 use sapphire_timer_core::SearchMode;
 
-use super::open_workspace;
+use super::{Locator, open_workspace};
 
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Mode {
@@ -39,13 +39,8 @@ pub struct SearchArgs {
     mode: Mode,
 }
 
-pub fn run(
-    dir: Option<&Path>,
-    args: SearchArgs,
-    remote: Option<&str>,
-    token: Option<&str>,
-) -> Result<()> {
-    let ws = open_workspace(dir, remote, token)?;
+pub fn run(loc: &Locator, args: SearchArgs) -> Result<()> {
+    let ws = open_workspace(loc)?;
     ws.ensure_search_ready()?;
 
     let results = ws.search(&args.query, args.limit, args.mode.into())?;
