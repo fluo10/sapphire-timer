@@ -92,6 +92,16 @@ impl UserConfig {
         Ok(config)
     }
 
+    /// Persist the config to [`path`](Self::path), creating parent dirs.
+    pub fn save(&self) -> Result<()> {
+        let path = Self::path();
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        std::fs::write(&path, toml::to_string_pretty(self)?)?;
+        Ok(())
+    }
+
     /// Sync cadence, or `None` when periodic sync is off.
     pub fn sync_interval(&self) -> Option<std::time::Duration> {
         self.sync_interval_minutes
