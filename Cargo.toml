@@ -2,6 +2,7 @@
 members = [
     "sapphire-timer-cli",
     "sapphire-timer-core",
+    "sapphire-timer-gui",
 ]
 resolver = "3"
 

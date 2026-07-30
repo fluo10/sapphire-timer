@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use grain_id::GrainId;
 
 use crate::{
@@ -90,6 +90,35 @@ pub fn run_timer(
         comment: comment(stop),
     };
 
+    let path = session::append(&timer.logs_dir()?, &session)?;
+    Ok((session, path))
+}
+
+/// Record a session whose countdown was driven elsewhere (e.g. a GUI's frame
+/// loop), without running the blocking [`run_timer`] cycle.
+///
+/// Builds a [`Session`] from the supplied timing and appends it to the log.
+/// Returns the session and the log file written, so the caller can re-index it.
+#[allow(clippy::too_many_arguments)]
+pub fn record_session(
+    timer: &Timer,
+    preset: &Preset,
+    started_at: DateTime<Utc>,
+    ended_at: DateTime<Utc>,
+    elapsed_secs: u64,
+    outcome: Outcome,
+    comment: String,
+) -> Result<(Session, PathBuf)> {
+    let session = Session {
+        id: GrainId::now_unix(),
+        preset_id: preset.id,
+        preset_name: preset.name.clone(),
+        started_at,
+        ended_at,
+        elapsed_secs,
+        outcome,
+        comment,
+    };
     let path = session::append(&timer.logs_dir()?, &session)?;
     Ok((session, path))
 }

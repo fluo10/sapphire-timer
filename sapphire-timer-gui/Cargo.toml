@@ -1,0 +1,30 @@
+[package]
+name = "sapphire-timer-gui"
+edition.workspace = true
+version = "0.1.0"
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+categories = ["gui", "date-and-time"]
+keywords = ["timer", "pomodoro", "gui", "egui"]
+
+# The shared GUI lives in the library so the desktop / mobile / WASM binaries
+# (framework issue #86 Steps C/C'/E) can reuse it. `main.rs` is the desktop
+# entry point.
+[lib]
+name = "sapphire_timer_gui"
+path = "src/lib.rs"
+
+[[bin]]
+name = "sapphire-timer-gui"
+path = "src/main.rs"
+
+[dependencies]
+# One framework dependency via the facade (workspace + async backend).
+sapphire-framework = { version = "0.1", git = "https://github.com/fluo10/sapphire-framework", branch = "main", default-features = false, features = ["backend", "redb-store"] }
+sapphire-timer-core = { path = "../sapphire-timer-core", version = "0.1.0", default-features = false, features = ["redb-store"] }
+eframe = "0.29"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+anyhow.workspace = true
+chrono.workspace = true
+tracing-subscriber.workspace = true
