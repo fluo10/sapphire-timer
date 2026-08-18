@@ -7438,6 +7438,9 @@ version = "0.1.0"
 source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
 dependencies = [
  "sapphire-framework-backend",
+ "sapphire-framework-blob",
+ "sapphire-framework-remote-server",
+ "sapphire-framework-rpc",
  "sapphire-framework-workspace",
 ]
 
@@ -7606,6 +7609,19 @@ dependencies = [
  "sapphire-framework",
  "sapphire-timer-core",
  "tokio",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "sapphire-timer-server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "dirs 5.0.1",
+ "sapphire-framework",
+ "tokio",
+ "tracing",
  "tracing-subscriber",
 ]
 

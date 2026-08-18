@@ -1,0 +1,23 @@
+[package]
+name = "sapphire-timer-server"
+edition.workspace = true
+version = "0.1.0"
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+categories = ["command-line-utilities", "web-programming::http-server"]
+keywords = ["timer", "sync", "server", "self-hosted"]
+
+[[bin]]
+name = "sapphire-timer-server"
+path = "src/main.rs"
+
+[dependencies]
+# The server is the framework's remote-sync server; this binary just runs it.
+sapphire-framework = { version = "0.1", git = "https://github.com/fluo10/sapphire-framework", branch = "main", default-features = false, features = ["remote-server"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal"] }
+clap.workspace = true
+anyhow.workspace = true
+dirs.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
