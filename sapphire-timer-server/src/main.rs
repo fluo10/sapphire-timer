@@ -15,7 +15,7 @@ use std::sync::Arc;
 
 use anyhow::Context as _;
 use clap::Parser;
-use sapphire_framework::remote_server::{ServerState, serve};
+use sapphire_framework::remote_server::{KeyStore, ServerState, serve};
 
 #[derive(Parser)]
 #[command(
@@ -33,11 +33,12 @@ struct Args {
     #[arg(long, env = "SAPPHIRE_TIMER_SERVER_DATA_DIR", value_name = "DIR")]
     data_dir: Option<PathBuf>,
 
-    /// Require `Authorization: Bearer <token>`. When omitted the server is open
-    /// (suitable only for a trusted network). Per-key labeled auth is tracked in
-    /// framework issue #92.
-    #[arg(long, env = "SAPPHIRE_TIMER_SERVER_TOKEN", value_name = "TOKEN")]
-    token: Option<String>,
+    /// Path to the API key file. Defaults to `<data_dir>/keys.toml`. A missing
+    /// file is treated as an empty key store (it is not created); the server
+    /// then refuses to start rather than listen unauthenticated. `gen-key`
+    /// style management of this file is tracked in framework issue #92.
+    #[arg(long, env = "SAPPHIRE_TIMER_SERVER_KEYS", value_name = "FILE")]
+    keys: Option<PathBuf>,
 }
 
 fn default_data_dir() -> PathBuf {
@@ -56,12 +57,11 @@ async fn main() -> anyhow::Result<()> {
     std::fs::create_dir_all(&data_dir)
         .with_context(|| format!("creating data dir {}", data_dir.display()))?;
 
-    let mut state = ServerState::new(&data_dir);
-    if let Some(token) = &args.token {
-        state = state.with_token(token);
-    }
-    let auth = if args.token.is_some() { "bearer token" } else { "open (no auth)" };
-    tracing::info!(addr = %args.addr, data_dir = %data_dir.display(), auth, "sapphire-timer-server starting");
+    let keys_path = args.keys.unwrap_or_else(|| data_dir.join("keys.toml"));
+    let keys = KeyStore::load(&keys_path)
+        .with_context(|| format!("loading API keys from {}", keys_path.display()))?;
+    let state = ServerState::new(&data_dir).with_keys(Arc::new(keys));
+    tracing::info!(addr = %args.addr, data_dir = %data_dir.display(), keys = %keys_path.display(), "sapphire-timer-server starting");
 
     serve(args.addr, Arc::new(state))
         .await
