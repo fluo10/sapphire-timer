@@ -35,8 +35,9 @@ struct Args {
 
     /// Path to the API key file. Defaults to `<data_dir>/keys.toml`. A missing
     /// file is treated as an empty key store (it is not created); the server
-    /// then refuses to start rather than listen unauthenticated. `gen-key`
-    /// style management of this file is tracked in framework issue #92.
+    /// then refuses to start rather than listen unauthenticated. This binary
+    /// has no key-management subcommands; edit the file by hand, or use an
+    /// application server that provides `gen-key`-style management.
     #[arg(long, env = "SAPPHIRE_TIMER_SERVER_KEYS", value_name = "FILE")]
     keys: Option<PathBuf>,
 }
