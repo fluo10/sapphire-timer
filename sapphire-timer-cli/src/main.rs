@@ -18,7 +18,7 @@ struct Cli {
     timer_dir: Option<PathBuf>,
 
     /// Operate on a remote workspace served by a sapphire-timer server, e.g.
-    /// `https://host:8080` (append `#<ws>` to pick a workspace on a
+    /// `https://host:3171` (append `#<ws>` to pick a workspace on a
     /// multi-workspace server).
     #[arg(long, env = "SAPPHIRE_TIMER_REMOTE", global = true, value_name = "URL")]
     remote: Option<String>,
