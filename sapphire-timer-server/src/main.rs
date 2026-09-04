@@ -25,7 +25,7 @@ use sapphire_framework::remote_server::{KeyStore, ServerState, serve};
 )]
 struct Args {
     /// Address to bind.
-    #[arg(long, env = "SAPPHIRE_TIMER_SERVER_ADDR", default_value = "127.0.0.1:8080")]
+    #[arg(long, env = "SAPPHIRE_TIMER_SERVER_ADDR", default_value = "127.0.0.1:3171")]
     addr: SocketAddr,
 
     /// Data directory (file origins + rebuildable cache + change log + blobs).
