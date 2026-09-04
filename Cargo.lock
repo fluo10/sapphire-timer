@@ -7435,16 +7435,19 @@ dependencies = [
 [[package]]
 name = "sapphire-framework"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "sapphire-framework-backend",
+ "sapphire-framework-blob",
+ "sapphire-framework-remote-server",
+ "sapphire-framework-rpc",
  "sapphire-framework-workspace",
 ]
 
 [[package]]
 name = "sapphire-framework-backend"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "async-trait",
  "chrono",
@@ -7461,7 +7464,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-blob"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "sha2",
  "thiserror 2.0.18",
@@ -7470,7 +7473,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-remote-client"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "base64 0.22.1",
  "reqwest",
@@ -7479,31 +7482,36 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.18",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
 name = "sapphire-framework-remote-server"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "axum",
  "base64 0.22.1",
  "chrono",
+ "getrandom 0.2.17",
  "redb",
  "sapphire-framework-blob",
  "sapphire-framework-retrieve",
  "sapphire-framework-rpc",
+ "sapphire-framework-track",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
  "tokio",
+ "toml",
  "tracing",
+ "uuid",
 ]
 
 [[package]]
 name = "sapphire-framework-retrieve"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "arrow-array",
  "arrow-schema",
@@ -7522,7 +7530,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-rpc"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "chrono",
  "serde",
@@ -7533,7 +7541,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-track"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "redb",
  "thiserror 2.0.18",
@@ -7543,7 +7551,7 @@ dependencies = [
 [[package]]
 name = "sapphire-framework-workspace"
 version = "0.1.0"
-source = "git+https://github.com/fluo10/sapphire-framework?branch=main#7e37b4e5b11c70da6fe1fa48ff3f78d1efbc79ec"
+source = "git+https://github.com/fluo10/sapphire-framework?branch=main#34ba131c6caa16032d77ead03ea264546dd20ac0"
 dependencies = [
  "chrono",
  "indexmap 2.14.0",
@@ -7606,6 +7614,19 @@ dependencies = [
  "sapphire-framework",
  "sapphire-timer-core",
  "tokio",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "sapphire-timer-server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "dirs 5.0.1",
+ "sapphire-framework",
+ "tokio",
+ "tracing",
  "tracing-subscriber",
 ]
 
@@ -9576,7 +9597,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.48.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

@@ -130,7 +130,11 @@ mod tests {
                 .build()
                 .unwrap();
             rt.block_on(async move {
-                let state = Arc::new(sapphire_remote_server::ServerState::new(data_dir));
+                // The framework's routers answer 503 unless a key store is
+                // configured, so a keyless test server has to opt out by name.
+                let state = Arc::new(
+                    sapphire_remote_server::ServerState::new(data_dir).insecure_for_tests(),
+                );
                 let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
                 let addr = listener.local_addr().unwrap();
                 tx.send(addr).unwrap();
