@@ -1,6 +1,6 @@
 # sapphire-timer
 
-A preset-based timer that keeps your data alive as plain text — timeless like fossils.
+A preset-based timer built on [sapphire-framework](https://github.com/fluo10/sapphire-framework) — file-based, local-first, made for human-agent collaboration.
 
 Presets are TOML files. Session logs are append-only JSONL. Both are ordinary
 files in a directory you can put under git, and both are full-text searchable.

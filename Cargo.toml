@@ -8,7 +8,7 @@ members = [
 resolver = "3"
 
 [workspace.package]
-description = "Preset-based timer that keeps your data alive as plain text - timeless like fossils"
+description = "A preset-based timer built on sapphire-framework - file-based, local-first, made for human-agent collaboration"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/fluo10/sapphire-timer"
 edition = "2024"
